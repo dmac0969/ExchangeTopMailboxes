@@ -91,3 +91,127 @@ $mailboxObj | Add-Member NoteProperty -Name "Custom Attribute 3" -Value $customA
 
 $mailboxReport += $mailboxObj
 }
+
+if($sendEmail) { $mailboxReportHTML = $null $htmlTableHeader = "
+
+"
+$mailboxReportHTML += $htmlTableHeader
+foreach($mailbox in $mailboxReport)
+{
+
+    $totalSendLimit = Get-MailboxDatabase -Identity db1
+
+    if(!$mailbox."Last Logon")
+    {
+        $htmlTableRow = "<tr>"
+
+        $htmlTableRow = $htmlTableRow + "<td class=""critical"">$($mailbox."Display Name")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""critical"">$($mailbox."Mailbox Size")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""critical"">$($mailbox."Using Mailbox Database Default Limits")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""critical"">$($mailbox."Prohibit Send Limit")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""critical"">$($mailbox."Prohibit Send/Receive Limit")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""critical"">$($mailbox."Item Count")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""critical"">$($mailbox."Last Logon")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""critical"">$($mailbox."Custom Attribute 1")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""critical"">$($mailbox."Custom Attribute 3")</td>"
+
+
+        $htmlTableRow = $htmlTableRow + "</tr>"
+    }
+    elseif($mailbox."Using Mailbox Database Default Limits" -eq "True" -and $mailbox."Mailbox Size" -gt $totalSendLimit.ProhibitSendQuota.Value)
+    {
+
+        $htmlTableRow = "<tr>"
+
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Display Name")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Mailbox Size")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Using Mailbox Database Default Limits")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Prohibit Send Limit")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Prohibit Send/Receive Limit")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Item Count")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Last Logon")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Custom Attribute 1")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Custom Attribute 3")</td>"
+
+        $htmlTableRow = $htmlTableRow + "</tr>"
+    }
+    elseif($mailbox."Mailbox Size" -ge $mailbox."Prohibit Send Limit".value)
+    {
+        $htmlTableRow = "<tr>"
+
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Display Name")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Mailbox Size")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Using Mailbox Database Default Limits")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Prohibit Send Limit")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Prohibit Send/Receive Limit")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Item Count")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Last Logon")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Custom Attribute 1")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""warn"">$($mailbox."Custom Attribute 3")</td>"
+
+        $htmlTableRow = $htmlTableRow + "</tr>"
+    }
+    elseif($mailbox."Custom Attribute 3" -eq "T_4" -and $mailbox."Mailbox Size" -ge $totalSendLimit.ProhibitSendQuota.Value)
+    {
+        $htmlTableRow = "<tr>"
+
+        $htmlTableRow = $htmlTableRow + "<td class=""info"">$($mailbox."Display Name")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""info"">$($mailbox."Mailbox Size")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""info"">$($mailbox."Using Mailbox Database Default Limits")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""info"">$($mailbox."Prohibit Send Limit")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""info"">$($mailbox."Prohibit Send/Receive Limit")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""info"">$($mailbox."Item Count")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""info"">$($mailbox."Last Logon")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""info"">$($mailbox."Custom Attribute 1")</td>"
+        $htmlTableRow = $htmlTableRow + "<td class=""info"">$($mailbox."Custom Attribute 3")</td>"
+
+        $htmlTableRow = $htmlTableRow + "</tr>"
+    }
+    else
+    {
+        $htmlTableRow = "<tr>"
+
+
+        $htmlTableRow = $htmlTableRow + "<td>$($mailbox."Display Name")</td>"
+        $htmlTableRow = $htmlTableRow + "<td>$($mailbox."Mailbox Size")</td>"
+        $htmlTableRow = $htmlTableRow + "<td>$($mailbox."Using Mailbox Database Default Limits")</td>"
+        $htmlTableRow = $htmlTableRow + "<td>$($mailbox."Prohibit Send Limit")</td>"
+        $htmlTableRow = $htmlTableRow + "<td>$($mailbox."Prohibit Send/Receive Limit")</td>"
+        $htmlTableRow = $htmlTableRow + "<td>$($mailbox."Item Count")</td>"
+        $htmlTableRow = $htmlTableRow + "<td>$($mailbox."Last Logon")</td>"
+        $htmlTableRow = $htmlTableRow + "<td>$($mailbox."Custom Attribute 1")</td>"
+        $htmlTableRow = $htmlTableRow + "<td>$($mailbox."Custom Attribute 3")</td>"
+
+        $htmlTableRow = $htmlTableRow + "</tr>"
+
+    }
+    $mailboxReportHTML += $htmlTableRow
+
+}
+
+$mailboxReportHTML += "</table>
+                    </p>"
+$htmlHead = "<html>
+            <style>
+            BODY{font-family: Arial; font-size: 8pt;}
+            H1{font-size: 16px;}
+            H2{font-size: 14px;}
+            H3{font-size: 12px;}
+            TABLE{border: 1px solid black; border-collapse: collapse; font-size: 8pt;}
+            TH{border: 1px solid black; background: #dddddd; padding: 5px; color: #000000;}
+            TD{border: 1px solid black; padding: 5px; }
+            td.info{background: #1ac6ff;}
+            td.pass{background: #7FFF00;}
+            td.warn{background: #FFB400;}
+            td.critical{background: #FF0000;}
+            </style>
+            <body>
+            <h3 align=""center"">Exchange Top 20 User Mailboxes</h3>
+            <p>Exchange Top 20 User Mailboxes as of $now</p>"
+
+$htmlTail = "</body></html>"
+
+$htmlReport = $htmlHead + $mailboxReportHTML + $htmlTail
+
+Send-MailMessage @smtpSettings -Body $htmlReport -BodyAsHtml -Encoding ([System.Text.Encoding]::UTF8)
+}
