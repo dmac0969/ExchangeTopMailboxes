@@ -6,7 +6,7 @@
 
 .DESCRIPTION The top portion of the script gathers the top 20 largest mailboxes in an exchange 2010 environment. The bottom portion formats the results in HTML and sends them out in an email.
 
->
+#>
 
 [CmdletBinding()] param( [parameter(mandatory=$false)] [switch]$sendEmail )
 
